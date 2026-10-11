@@ -16,7 +16,12 @@ insert into auth.users (id, email) values
   ('aaaaaaaa-0000-0000-0000-000000000002', 'bob@example.test'),
   ('aaaaaaaa-0000-0000-0000-000000000003', 'carol@example.test'),
   ('aaaaaaaa-0000-0000-0000-000000000004', 'dave@example.test');
-update auth.users set email_confirmed_at = null where id = 'aaaaaaaa-0000-0000-0000-000000000004';
+update auth.users set email_confirmed_at = now()
+ where id in ('aaaaaaaa-0000-0000-0000-000000000001',
+              'aaaaaaaa-0000-0000-0000-000000000002',
+              'aaaaaaaa-0000-0000-0000-000000000003');
+update auth.users set email_confirmed_at = null
+ where id = 'aaaaaaaa-0000-0000-0000-000000000004';
 
 create temp table ctx as select
   (select id from public.workspaces where owner_id = 'aaaaaaaa-0000-0000-0000-000000000001') as alice_ws;
