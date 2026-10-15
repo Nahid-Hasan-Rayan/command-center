@@ -15,9 +15,9 @@ export default function SignupPage() {
   return (
     <AuthCard
       title="Create account"
-      subtitle="Use the same email address your invitation was sent to."
+      subtitle="Send a request for access. The administrator reviews it before you can use the app."
     >
-      <Form action={signupAction} submit="Create account">
+      <Form action={signupAction} submit="Request access">
         <Field label="Name" htmlFor="displayName">
           <input
             id="displayName"
@@ -38,6 +38,37 @@ export default function SignupPage() {
             className={inputClass}
           />
         </Field>
+        <Field
+          label="WhatsApp number"
+          htmlFor="whatsapp"
+          hint="With country code, for example +60 12-345 6789. Only the administrator sees it."
+        >
+          <input
+            id="whatsapp"
+            name="whatsapp"
+            type="tel"
+            autoComplete="tel"
+            required
+            maxLength={20}
+            className={inputClass}
+          />
+        </Field>
+        <Field
+          label="Matric ID (optional)"
+          htmlFor="matricId"
+          hint="Students only, for example A25MJ0186."
+        >
+          <input
+            id="matricId"
+            name="matricId"
+            autoComplete="off"
+            maxLength={20}
+            className={inputClass}
+          />
+        </Field>
+        <Field label="Why do you want access? (optional)" htmlFor="note">
+          <textarea id="note" name="note" rows={2} maxLength={500} className={inputClass} />
+        </Field>
         <Field label="Password" htmlFor="password" hint="At least 12 characters.">
           <input
             id="password"
@@ -50,6 +81,13 @@ export default function SignupPage() {
             className={inputClass}
           />
         </Field>
+        <label className="flex items-start gap-2 text-sm">
+          <input type="checkbox" name="acknowledged" required className="mt-1" />
+          <span>
+            I understand that the administrator can see my registration details and, to keep the
+            service safe, the activity, files and messages inside this app.
+          </span>
+        </label>
       </Form>
       <p className="mt-4 text-sm text-muted">
         Already have an account?{" "}

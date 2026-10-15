@@ -9,6 +9,8 @@ import {
   inviteSchema,
   memberFeaturesSchema,
   passwordSchema,
+  registrationDecisionSchema,
+  removalSchema,
   signupSchema,
   totpCodeSchema,
   widgetStateSchema,
@@ -34,6 +36,8 @@ describe("credentials", () => {
         email: "a@b.co",
         password: "correct horse battery",
         displayName: "A",
+        whatsapp: "+60 12-345 6789",
+        acknowledged: "on",
       }).success,
     ).toBe(true);
     expect(
@@ -41,6 +45,8 @@ describe("credentials", () => {
         email: "a@b.co",
         password: "correct horse battery",
         displayName: "",
+        whatsapp: "+60 12-345 6789",
+        acknowledged: "on",
       }).success,
     ).toBe(false);
     expect(totpCodeSchema.safeParse("123456").success).toBe(true);
@@ -131,5 +137,71 @@ describe("widget messages", () => {
   it("limits stored state size", () => {
     expect(widgetStateSchema.safeParse({ k: "x".repeat(499_000) }).success).toBe(true);
     expect(widgetStateSchema.safeParse({ k: "x".repeat(500_001) }).success).toBe(false);
+  });
+});
+
+describe("registration and administration", () => {
+  const base = { email: "a@b.co", password: "correct horse battery", displayName: "A" };
+
+  it("requires a WhatsApp number and the privacy acknowledgement", () => {
+    expect(signupSchema.safeParse({ ...base, acknowledged: "on" }).success).toBe(false);
+    expect(signupSchema.safeParse({ ...base, whatsapp: "+60123456789" }).success).toBe(false);
+    expect(signupSchema.safeParse({ ...base, whatsapp: "nope", acknowledged: "on" }).success).toBe(
+      false,
+    );
+  });
+
+  it("normalises optional matric id and note", () => {
+    const parsed = signupSchema.parse({
+      ...base,
+      whatsapp: "+60123456789",
+      matricId: " a25mj0186 ",
+      note: "  Study group  ",
+      acknowledged: "on",
+    });
+    expect(parsed.matricId).toBe("A25MJ0186");
+    expect(parsed.note).toBe("Study group");
+    const blank = signupSchema.parse({
+      ...base,
+      whatsapp: "+60123456789",
+      matricId: "",
+      note: "",
+      acknowledged: "on",
+    });
+    expect(blank.matricId).toBeUndefined();
+    expect(blank.note).toBeUndefined();
+    expect(
+      signupSchema.safeParse({
+        ...base,
+        whatsapp: "+60123456789",
+        matricId: "x",
+        acknowledged: "on",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("validates approval decisions", () => {
+    const userId = "bbbbbbbb-0000-4000-8000-000000000002";
+    expect(
+      registrationDecisionSchema.safeParse({ userId, decision: "approve", features: ["notes"] })
+        .success,
+    ).toBe(true);
+    expect(
+      registrationDecisionSchema.safeParse({ userId, decision: "approve", features: ["bogus"] })
+        .success,
+    ).toBe(false);
+    expect(
+      registrationDecisionSchema.safeParse({ userId, decision: "maybe", features: [] }).success,
+    ).toBe(false);
+  });
+
+  it("makes the administrator choose a removal option and confirm deletion", () => {
+    const userId = "bbbbbbbb-0000-4000-8000-000000000002";
+    expect(removalSchema.safeParse({ userId, option: "" }).success).toBe(false);
+    expect(removalSchema.safeParse({ userId, option: "suspend" }).success).toBe(true);
+    expect(removalSchema.safeParse({ userId, option: "delete" }).success).toBe(false);
+    expect(
+      removalSchema.safeParse({ userId, option: "delete", confirmEmail: "a@b.co" }).success,
+    ).toBe(true);
   });
 });

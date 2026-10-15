@@ -35,7 +35,50 @@ const personas = {
   owner: { role: "owner", features: [] },
   viewer: { role: "viewer", features: ["calendar"] },
   tooluser: { role: "viewer", features: ["widgets"] },
+  admin: { role: "owner", features: [] },
+  waiting: { role: "owner", features: [] },
+  paused: { role: "owner", features: [] },
 };
+
+const accounts = {
+  owner: { status: "approved", is_admin: false },
+  viewer: { status: "approved", is_admin: false },
+  tooluser: { status: "approved", is_admin: false },
+  admin: { status: "approved", is_admin: true },
+  waiting: { status: "pending", is_admin: false },
+  paused: { status: "suspended", is_admin: false },
+};
+
+const people = [
+  {
+    user_id: "7d5b3a0e-3b8a-4a52-9a8e-0a1d3c5e7fa1",
+    email: "newcomer@example.test",
+    full_name: "Nadia Newcomer",
+    whatsapp: "+60 12-345 6789",
+    matric_id: "A25MJ0001",
+    note: "Study group",
+    status: "pending",
+    requested_at: "2026-10-14T01:00:00Z",
+    decided_at: null,
+    decision_note: null,
+    is_admin: false,
+    features: [],
+  },
+  {
+    user_id: "7d5b3a0e-3b8a-4a52-9a8e-0a1d3c5e7fa2",
+    email: "member@example.test",
+    full_name: "Mina Member",
+    whatsapp: null,
+    matric_id: null,
+    note: null,
+    status: "approved",
+    requested_at: "2026-10-01T01:00:00Z",
+    decided_at: "2026-10-02T01:00:00Z",
+    decision_note: null,
+    is_admin: false,
+    features: ["notes"],
+  },
+];
 
 function b64url(value) {
   return Buffer.from(value).toString("base64url");
@@ -93,7 +136,54 @@ const mock = http.createServer((request, response) => {
       factors: [{ id: "f1", factor_type: "totp", status: "verified" }],
     });
   }
+  if (url.pathname === "/rest/v1/rpc/my_account") {
+    const account = accounts[persona] ?? accounts.owner;
+    return send(200, [
+      {
+        status: account.status,
+        is_admin: account.is_admin,
+        is_root: false,
+        full_name: persona,
+        features: personas[persona]?.features ?? [],
+      },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/rpc/admin_list_users") {
+    return accounts[persona]?.is_admin
+      ? send(200, people)
+      : send(403, { code: "42501", message: "administrator access required" });
+  }
+  if (url.pathname === "/rest/v1/rpc/admin_audit_list") {
+    return send(200, [
+      {
+        id: 1,
+        at: "2026-10-14T02:00:00Z",
+        admin_email: "admin@example.test",
+        action: "registration.approve",
+        target_email: "member@example.test",
+        detail: {},
+      },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/registrations") {
+    return send(
+      200,
+      single
+        ? {
+            email: `${persona}@example.test`,
+            full_name: persona,
+            whatsapp: "+60 12-345 6789",
+            matric_id: null,
+            requested_at: "2026-10-14T01:00:00Z",
+            decision_note: null,
+          }
+        : [],
+    );
+  }
   if (url.pathname === "/rest/v1/workspace_members") {
+    if ((accounts[persona] ?? accounts.owner).status !== "approved") {
+      return send(200, []);
+    }
     return send(200, [
       { workspace_id: WS, role: personas[persona].role, workspaces: { name: "Personal" } },
     ]);
@@ -244,6 +334,71 @@ try {
     (await Promise.all(["/messages", "/files", "/widgets"].map((p) => get(p, "owner")))).every(
       (r) => r.status === 200,
     ),
+  );
+
+  const redirectsTo = (response, path) =>
+    response.status === 307 && (response.headers.get("location") ?? "").endsWith(path);
+
+  for (const path of ["/", "/week", "/messages", "/files", "/widgets", "/people", "/admin"]) {
+    check(
+      `an account awaiting approval is sent from ${path} to /pending`,
+      redirectsTo(await get(path, "waiting"), "/pending"),
+    );
+  }
+  const waitingPage = await get("/pending", "waiting");
+  check(
+    "the waiting page explains the request",
+    waitingPage.status === 200 &&
+      waitingPage.text.includes("Your request is with the administrator") &&
+      waitingPage.text.includes("Awaiting approval"),
+  );
+  check(
+    "the waiting page offers no app navigation",
+    ["/week", "/messages", "/files", "/widgets", "/people", "/admin"].every(
+      (href) => !waitingPage.text.includes(`href="${href}"`),
+    ),
+  );
+  check("the waiting page still offers sign out", waitingPage.text.includes("Sign out"));
+  const pausedPage = await get("/pending", "paused");
+  check(
+    "a suspended account is told its access is paused",
+    pausedPage.status === 200 && pausedPage.text.includes("Your access is paused"),
+  );
+  check(
+    "a suspended account cannot open the app",
+    redirectsTo(await get("/", "paused"), "/pending"),
+  );
+  check(
+    "an approved account is sent away from /pending",
+    redirectsTo(await get("/pending", "owner"), "/"),
+  );
+
+  check("a non-admin gets 404 for /admin", (await get("/admin", "owner")).status === 404);
+  check(
+    "a non-admin gets 404 for /admin/audit",
+    (await get("/admin/audit", "owner")).status === 404,
+  );
+  check("a non-admin does not see the Admin link", !home.text.includes('href="/admin"'));
+  const adminPage = await get("/admin", "admin");
+  check(
+    "the administrator sees requests and people",
+    adminPage.status === 200 &&
+      adminPage.text.includes("Nadia Newcomer") &&
+      adminPage.text.includes("+60 12-345 6789") &&
+      adminPage.text.includes("Mina Member"),
+  );
+  check(
+    "removal has no preselected option",
+    adminPage.text.includes('name="option"') && !/name="option"[^>]*checked/.test(adminPage.text),
+  );
+  check(
+    "the administrator sees the Admin link",
+    (await get("/", "admin")).text.includes('href="/admin"'),
+  );
+  const auditPage = await get("/admin/audit", "admin");
+  check(
+    "the administrator can read the audit trail",
+    auditPage.status === 200 && auditPage.text.includes("registration.approve"),
   );
 } finally {
   mock.close();

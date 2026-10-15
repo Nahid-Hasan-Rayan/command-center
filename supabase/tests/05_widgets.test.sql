@@ -5,6 +5,10 @@ begin;
 
 create extension if not exists pgtap;
 
+-- Existing behaviour is tested with open registration; approval is covered in 06_platform_admin.
+update public.platform_settings set value = 'open' where key = 'registration_mode';
+update public.platform_settings set value = array_to_string(public.platform_features(), ',') where key = 'default_features';
+
 select plan(22);
 
 create function pg_temp.login(uid text, aal text default 'aal2') returns text

@@ -34,6 +34,10 @@ export async function signupAction(_previous: FormState, formData: FormData): Pr
     email: formData.get("email"),
     password: formData.get("password"),
     displayName: formData.get("displayName"),
+    whatsapp: formData.get("whatsapp") ?? "",
+    matricId: formData.get("matricId") ?? "",
+    note: formData.get("note") ?? "",
+    acknowledged: formData.get("acknowledged") ?? "",
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Check the form and try again." };
@@ -43,14 +47,22 @@ export async function signupAction(_previous: FormState, formData: FormData): Pr
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      data: { display_name: parsed.data.displayName },
+      data: {
+        display_name: parsed.data.displayName,
+        whatsapp: parsed.data.whatsapp,
+        matric_id: parsed.data.matricId,
+        note: parsed.data.note,
+      },
       emailRedirectTo: `${await siteOrigin()}/auth/callback`,
     },
   });
   if (error && error.status !== undefined && error.status >= 500) {
     return { error: GENERIC_ERROR };
   }
-  return { message: "If the address can be used, a confirmation email is on its way." };
+  return {
+    message:
+      "If the address can be used, a confirmation email is on its way. After you confirm it, the administrator reviews your request.",
+  };
 }
 
 export interface EnrollmentStart {

@@ -12,6 +12,8 @@ import {
   parseFeatures,
   type Role,
 } from "@/domain/features";
+import { canUseApp } from "@/domain/registration";
+import { getAccount } from "@/lib/account";
 import { readSupabaseEnv } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -100,7 +102,8 @@ export async function getSession(): Promise<SessionContext | null> {
 export async function requireSession(): Promise<SessionContext> {
   const session = await getSession();
   if (!session) {
-    redirect("/login");
+    const account = await getAccount();
+    redirect(account && !canUseApp(account.status) ? "/pending" : "/login");
   }
   return session;
 }

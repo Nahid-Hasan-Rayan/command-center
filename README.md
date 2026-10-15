@@ -32,7 +32,20 @@ npm run e2e
 - The database also requires a second-factor session (`aal2`) for every table, so a stolen first-factor session reads nothing.
 - Row-level security on every table. Access is by workspace role (owner, editor, viewer) and by an allow-list of features per member.
 - Invitations are single-use, hashed, bound to one confirmed email and expire.
+- Platform approval: a new sign-up is a registration request. Until the administrator approves it, the database denies every table to that account (`is_member` and `can_access` require an approved registration and a feature entitlement), and the app shows only `/pending`. Suspended, banned, archived and declined accounts are denied the same way.
 - Custom HTML tools run in a sandboxed frame with no network access. See `supabase/migrations/20261005000300_widgets.sql` and `src/domain/widgets.ts`.
+
+## Administration
+
+The administrator is the account whose **confirmed** email equals `platform_settings.admin_email` (default `nhrayan@gmail.com`), signed in with the second factor. That account cannot be changed or removed by anyone else. It can make other approved people administrators.
+
+- `/admin`: registration requests (name, email, WhatsApp, matric ID, reason), approve with chosen features or decline, change a person's features, suspend or restore, make or remove administrators, and remove a person.
+- Removal always asks for an explicit choice: **suspend** (reversible), **archive** (keeps data, reversible), **ban** (also blocks that email from registering again) or **delete** (erases the account and its data, and needs the email typed again).
+- `/admin/audit`: append-only record of every administrator action. It is only readable through `admin_audit_list`.
+- Settings live in `platform_settings` (change in the SQL editor): `registration_mode` (`approval` or `open`), `default_features` (granted automatically in `open` mode), `admin_email`.
+- People who already had an account when this was added are approved with every feature.
+- An invitation created by an administrator pre-approves the invitee. An invitation from anyone else does not.
+- Sign-up shows a notice that the administrator can see registration details and activity inside the app.
 
 ## Layout
 

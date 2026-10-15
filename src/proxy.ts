@@ -65,6 +65,7 @@ export async function proxy(request: NextRequest) {
   const policy = contentSecurityPolicy(nonce, new URL(env.url).origin);
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("x-pathname", pathname);
   requestHeaders.set("Content-Security-Policy", policy);
 
   const response = withCookies(NextResponse.next({ request: { headers: requestHeaders } }));

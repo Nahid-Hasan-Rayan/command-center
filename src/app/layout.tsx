@@ -3,12 +3,16 @@
  * @author Nahid Hasan Rayan
  */
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { signOutAction } from "@/app/actions-auth";
 import { Nav, type NavItem } from "@/components/nav";
 import { buttonClass } from "@/components/ui";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
 import { canManageMembers, canView } from "@/domain/features";
+import { allowedWhileUnapproved, canUseApp } from "@/domain/registration";
+import { getAccount } from "@/lib/account";
 import { getSession } from "@/lib/session";
 import "./globals.css";
 
@@ -25,7 +29,11 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const session = await getSession();
+  const [session, account] = await Promise.all([getSession(), getAccount()]);
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  if (account && !canUseApp(account.status) && pathname && !allowedWhileUnapproved(pathname)) {
+    redirect("/pending");
+  }
 
   const items: NavItem[] = [];
   if (session) {
@@ -45,6 +53,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     }
     if (canManageMembers(membership)) {
       items.push({ href: "/people", label: "People" });
+    }
+    if (account?.isAdmin) {
+      items.push({ href: "/admin", label: "Admin" });
     }
   }
 
@@ -66,6 +77,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                   </button>
                 </form>
               </div>
+            ) : account ? (
+              <form action={signOutAction}>
+                <button type="submit" className={buttonClass("quiet")}>
+                  Sign out
+                </button>
+              </form>
             ) : null}
           </div>
         </header>

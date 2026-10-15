@@ -2,6 +2,8 @@
  * NHR
  * @author Nahid Hasan Rayan
  */
+
+import { TIME_ZONE } from "@/config";
 import type { PeriodKind } from "@/domain/calendar";
 import { formatClock, type LocalDate } from "@/domain/time";
 
@@ -26,11 +28,26 @@ const dayMonth = new Intl.DateTimeFormat("en-GB", {
   timeZone: "UTC",
 });
 
+const dateTime = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: TIME_ZONE,
+});
+
 const asUtc = (date: LocalDate): Date => new Date(`${date}T00:00:00Z`);
 
 export const formatLongDate = (date: LocalDate): string => longDate.format(asUtc(date));
 export const formatShortDate = (date: LocalDate): string => shortDate.format(asUtc(date));
 export const formatDayMonth = (date: LocalDate): string => dayMonth.format(asUtc(date));
+
+/** An ISO timestamp in the campus time zone, for example "14 Oct 2026, 09:30". */
+export function formatDateTime(iso: string): string {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? "" : dateTime.format(date);
+}
 
 export const formatRange = (startMinutes: number, endMinutes: number): string =>
   `${formatClock(startMinutes)}–${formatClock(endMinutes)}`;
