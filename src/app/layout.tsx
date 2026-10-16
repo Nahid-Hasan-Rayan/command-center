@@ -10,7 +10,7 @@ import { signOutAction } from "@/app/actions-auth";
 import { Nav, type NavItem } from "@/components/nav";
 import { buttonClass } from "@/components/ui";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
-import { canManageMembers, canView } from "@/domain/features";
+import { canManageMembers, canView, type Feature } from "@/domain/features";
 import { allowedWhileUnapproved, canUseApp } from "@/domain/registration";
 import { getAccount } from "@/lib/account";
 import { getSession } from "@/lib/session";
@@ -38,17 +38,24 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const items: NavItem[] = [];
   if (session) {
     const { membership } = session;
+    // A feature shows only if the workspace grants it AND the administrator granted it to this person.
+    const allowed = (feature: Feature) =>
+      canView(membership, feature) &&
+      (!account || account.isAdmin || account.features.includes(feature));
     items.push({ href: "/", label: "Today" });
-    if (canView(membership, "calendar")) {
+    if (allowed("calendar")) {
       items.push({ href: "/week", label: "Week" }, { href: "/semester", label: "Semester" });
     }
-    if (canView(membership, "messages")) {
+    if (allowed("study")) {
+      items.push({ href: "/study", label: "Study" });
+    }
+    if (allowed("messages")) {
       items.push({ href: "/messages", label: "Messages" });
     }
-    if (canView(membership, "files")) {
+    if (allowed("files")) {
       items.push({ href: "/files", label: "Files" });
     }
-    if (canView(membership, "widgets")) {
+    if (allowed("widgets")) {
       items.push({ href: "/widgets", label: "Tools" });
     }
     if (canManageMembers(membership)) {

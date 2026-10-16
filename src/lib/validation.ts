@@ -5,6 +5,7 @@
 import { z } from "zod";
 import { FEATURES, type InvitableRole } from "@/domain/features";
 import { normalizeMatric, normalizeWhatsapp, REMOVAL_OPTIONS } from "@/domain/registration";
+import { isLocalDate } from "@/domain/time";
 import { MAX_STATE_CHARS, WIDGET_PERMISSIONS } from "@/domain/widgets";
 
 export const emailSchema = z.string().trim().toLowerCase().min(3).max(254).pipe(z.email());
@@ -149,4 +150,51 @@ export const removalSchema = z
 export const adminRoleSchema = z.object({
   userId: uuidSchema,
   makeAdmin: z.enum(["true", "false"]).transform((value) => value === "true"),
+});
+
+const localDateSchema = z
+  .string()
+  .trim()
+  .refine((value) => isLocalDate(value), "Enter a valid date.");
+
+export const catalogCourseSchema = z.object({ catalogId: z.string().trim().min(1).max(40) });
+
+export const examDateSchema = z.object({
+  courseId: uuidSchema,
+  examDate: z
+    .string()
+    .trim()
+    .transform((value) => (value === "" ? null : value))
+    .refine((value) => value === null || isLocalDate(value), "Enter a valid date."),
+});
+
+export const studySessionSchema = z.object({
+  courseId: z
+    .string()
+    .trim()
+    .transform((value) => (value === "" ? null : value))
+    .pipe(uuidSchema.nullable()),
+  minutes: z.coerce
+    .number()
+    .int()
+    .min(1, "Use at least 1 minute.")
+    .max(600, "Use at most 600 minutes."),
+  note: optionalNoteSchema(200).optional(),
+  source: z.enum(["timer", "manual"]),
+});
+
+export const studyPaperSchema = z.object({
+  courseId: uuidSchema,
+  takenOn: localDateSchema,
+  scorePct: z.coerce
+    .number()
+    .min(0, "A score is between 0 and 100.")
+    .max(100, "A score is between 0 and 100."),
+  note: optionalNoteSchema(300).optional(),
+});
+
+export const studySettingsSchema = z.object({
+  dailyGoalMin: z.coerce.number().int().min(10).max(720),
+  unitMinutes: z.coerce.number().int().min(5).max(240),
+  restDays: z.array(z.coerce.number().int().min(1).max(7)).max(7),
 });

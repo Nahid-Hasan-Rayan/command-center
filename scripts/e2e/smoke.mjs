@@ -33,20 +33,36 @@ const widgets = {
 
 const personas = {
   owner: { role: "owner", features: [] },
-  viewer: { role: "viewer", features: ["calendar"] },
+  viewer: { role: "viewer", features: ["calendar", "study"] },
   tooluser: { role: "viewer", features: ["widgets"] },
   admin: { role: "owner", features: [] },
   waiting: { role: "owner", features: [] },
   paused: { role: "owner", features: [] },
+  nostudy: { role: "owner", features: [] },
 };
 
+const everyFeature = [
+  "calendar",
+  "courses",
+  "study",
+  "career",
+  "goals",
+  "notes",
+  "analytics",
+  "messages",
+  "files",
+  "widgets",
+];
+
+// What the administrator granted each person, separate from their role in the workspace.
 const accounts = {
-  owner: { status: "approved", is_admin: false },
-  viewer: { status: "approved", is_admin: false },
-  tooluser: { status: "approved", is_admin: false },
-  admin: { status: "approved", is_admin: true },
-  waiting: { status: "pending", is_admin: false },
-  paused: { status: "suspended", is_admin: false },
+  owner: { status: "approved", is_admin: false, entitled: everyFeature },
+  viewer: { status: "approved", is_admin: false, entitled: ["calendar", "study"] },
+  tooluser: { status: "approved", is_admin: false, entitled: ["widgets"] },
+  admin: { status: "approved", is_admin: true, entitled: everyFeature },
+  waiting: { status: "pending", is_admin: false, entitled: [] },
+  paused: { status: "suspended", is_admin: false, entitled: [] },
+  nostudy: { status: "approved", is_admin: false, entitled: ["calendar", "notes"] },
 };
 
 const people = [
@@ -144,7 +160,7 @@ const mock = http.createServer((request, response) => {
         is_admin: account.is_admin,
         is_root: false,
         full_name: persona,
-        features: personas[persona]?.features ?? [],
+        features: account.entitled,
       },
     ]);
   }
@@ -179,6 +195,57 @@ const mock = http.createServer((request, response) => {
           }
         : [],
     );
+  }
+  if (url.pathname === "/rest/v1/study_courses") {
+    return send(200, [
+      {
+        id: "dddddddd-0000-4000-8000-000000000001",
+        code: "DSA",
+        title: "Data Structures & Algorithms",
+        color: "#38bdf8",
+        exam_date: "2026-12-01",
+        weight: 1,
+      },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/study_units") {
+    return send(
+      200,
+      ["Definitions", "Algorithms", "Complexity"].map((title, index) => ({
+        id: `eeeeeeee-0000-4000-8000-00000000000${index + 1}`,
+        course_id: "dddddddd-0000-4000-8000-000000000001",
+        topic: "Introduction",
+        title,
+        position: index,
+      })),
+    );
+  }
+  if (url.pathname === "/rest/v1/study_progress") {
+    return send(200, [
+      { unit_id: "eeeeeeee-0000-4000-8000-000000000001", done_at: new Date().toISOString() },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/study_sessions") {
+    return send(200, [
+      {
+        session_date: new Date().toISOString().slice(0, 10),
+        minutes: 45,
+        course_id: "dddddddd-0000-4000-8000-000000000001",
+      },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/study_papers") {
+    return send(200, []);
+  }
+  if (url.pathname === "/rest/v1/study_settings") {
+    return single
+      ? send(406, {
+          code: "PGRST116",
+          message: "The result contains 0 rows",
+          details: null,
+          hint: null,
+        })
+      : send(200, []);
   }
   if (url.pathname === "/rest/v1/workspace_members") {
     if ((accounts[persona] ?? accounts.owner).status !== "approved") {
@@ -339,7 +406,16 @@ try {
   const redirectsTo = (response, path) =>
     response.status === 307 && (response.headers.get("location") ?? "").endsWith(path);
 
-  for (const path of ["/", "/week", "/messages", "/files", "/widgets", "/people", "/admin"]) {
+  for (const path of [
+    "/",
+    "/week",
+    "/messages",
+    "/files",
+    "/widgets",
+    "/people",
+    "/admin",
+    "/study",
+  ]) {
     check(
       `an account awaiting approval is sent from ${path} to /pending`,
       redirectsTo(await get(path, "waiting"), "/pending"),
@@ -399,6 +475,33 @@ try {
   check(
     "the administrator can read the audit trail",
     auditPage.status === 200 && auditPage.text.includes("registration.approve"),
+  );
+
+  const study = await get("/study", "owner");
+  check(
+    "the study page shows courses, the plan, the timer and settings",
+    study.status === 200 &&
+      study.text.includes("Data Structures") &&
+      study.text.includes("Next best actions") &&
+      study.text.includes("Next 7 days") &&
+      study.text.includes("Focus timer") &&
+      study.text.includes("Rest days"),
+  );
+  check(
+    "the study page lists units with a done toggle",
+    study.text.includes("Definitions") && study.text.includes("Mark done: Algorithms"),
+  );
+  check("the study page counts today's minutes", study.text.includes("45 min"));
+  check("the owner sees the Study link", home.text.includes('href="/study"'));
+  check(
+    "a person without the study feature gets 404 and no link",
+    (await get("/study", "nostudy")).status === 404 &&
+      !(await get("/", "nostudy")).text.includes('href="/study"'),
+  );
+  check(
+    "a viewer granted study can open it but cannot edit the shared course",
+    (await get("/study", "viewer")).status === 200 &&
+      !(await get("/study", "viewer")).text.includes("Save exam date"),
   );
 } finally {
   mock.close();

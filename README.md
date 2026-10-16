@@ -47,6 +47,16 @@ The administrator is the account whose **confirmed** email equals `platform_sett
 - An invitation created by an administrator pre-approves the invitee. An invitation from anyone else does not.
 - Sign-up shows a notice that the administrator can see registration details and activity inside the app.
 
+## Study
+
+`/study` is the planner, modelled on the Mastery Hub reference (see `docs/mastery-hub-reference.md`).
+
+- Add the DSA, HCI, OS and Agile courses with one tap; each brings its full unit list (252 units).
+- Set an exam date per course. The page shows the phase, the units per study day you need, and a workload check across all courses against your daily goal.
+- Next best actions, a 7-day plan with rest days and spaced reviews, a focus timer that logs to a course, manual time, past papers, and a streak.
+- Courses and units are shared inside a workspace (editors change them). Progress, sessions, papers and settings are private to each person.
+- The planning maths lives in `src/domain/study-plan.ts` and is covered by unit tests.
+
 ## Layout
 
 - `src/domain`: pure logic (calendar, timetable, attendance, grading, features, access gate, files, messages, widgets).

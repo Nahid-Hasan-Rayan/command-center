@@ -113,6 +113,11 @@ export async function requireFeature(feature: Feature): Promise<SessionContext> 
   if (!canView(session.membership, feature)) {
     notFound();
   }
+  // The administrator also decides, per person, which features exist for them.
+  const account = await getAccount();
+  if (account && !account.isAdmin && !account.features.includes(feature)) {
+    notFound();
+  }
   return session;
 }
 

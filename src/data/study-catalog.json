@@ -1,0 +1,702 @@
+{
+  "courses": [
+    {
+      "id": "dsa",
+      "code": "DSA",
+      "title": "Data Structures & Algorithms",
+      "color": "#38bdf8",
+      "topics": [
+        {
+          "title": "Introduction to Data Structures & Algorithms",
+          "units": [
+            { "key": "intro-def", "title": "Data Structure Definition & Classification" },
+            { "key": "intro-algo", "title": "Algorithm Properties & Characteristics" },
+            { "key": "intro-sdlc", "title": "SDLC Phases & Programming Principles" }
+          ]
+        },
+        {
+          "title": "ADT, C++ Classes & File Operations",
+          "units": [
+            { "key": "adt-concept", "title": "Abstract Data Type (ADT) Concept" },
+            { "key": "adt-classes", "title": "C++ Classes: Constructors, Mutators, Accessors" },
+            { "key": "adt-pointers", "title": "Pointers, Dynamic Memory & Arrays of Objects" },
+            { "key": "adt-files", "title": "File Operations: Text, Binary & Random Access" }
+          ]
+        },
+        {
+          "title": "Recursion",
+          "units": [
+            { "key": "rec-basics", "title": "Base Case & Recursive Case" },
+            { "key": "rec-trace", "title": "Tracing Recursive Calls" },
+            { "key": "rec-memory", "title": "Call Stack & Memory" },
+            { "key": "rec-classic", "title": "Classic Recursion Problems" }
+          ]
+        },
+        {
+          "title": "Algorithm Efficiency & Big O",
+          "units": [
+            { "key": "bo-notation", "title": "Big O Notation & Formal Definition" },
+            { "key": "bo-loops", "title": "Analyzing Loops: Single, Nested, Dependent, Halving" },
+            { "key": "bo-recursive", "title": "Analyzing Recursive Complexity" }
+          ]
+        },
+        {
+          "title": "Sorting Algorithms",
+          "units": [
+            { "key": "sort-bubble", "title": "Bubble Sort" },
+            { "key": "sort-selection", "title": "Selection Sort" },
+            { "key": "sort-insertion", "title": "Insertion Sort" },
+            { "key": "sort-merge", "title": "Merge Sort" },
+            { "key": "sort-quick", "title": "Quick Sort" },
+            { "key": "sort-analysis", "title": "Sorting Comparison & When to Use Which" },
+            { "key": "sorting-heap", "title": "Heap Sort" },
+            {
+              "key": "sorting-linear",
+              "title": "Counting, Radix & Bucket Sort (and the n log n Lower Bound)"
+            }
+          ]
+        },
+        {
+          "title": "Searching Algorithms",
+          "units": [
+            { "key": "search-linear", "title": "Sequential / Linear Search" },
+            { "key": "search-binary", "title": "Binary Search" },
+            {
+              "key": "search-answer",
+              "title": "Binary Search Variants: Lower/Upper Bound & Search on the Answer"
+            }
+          ]
+        },
+        {
+          "title": "Linked Lists",
+          "units": [
+            { "key": "ll-node", "title": "Node Structure & List Types" },
+            { "key": "ll-ops", "title": "Insert, Delete, Traverse Operations" },
+            { "key": "ll-reverse", "title": "Reverse, Cycle Detection, Middle" }
+          ]
+        },
+        {
+          "title": "Stack",
+          "units": [
+            { "key": "stack-basics", "title": "Stack Operations: push, pop, peek" },
+            { "key": "stack-apps", "title": "Stack Applications: Parens & Expressions" },
+            { "key": "stack-mono", "title": "Monotonic Stack: Next Greater, Histogram, Spans" }
+          ]
+        },
+        {
+          "title": "Queue",
+          "units": [
+            { "key": "queue-basics", "title": "Queue Operations & Implementations" },
+            { "key": "queue-apps", "title": "Queue Applications & BFS" },
+            { "key": "queue-deque", "title": "Deque & Monotonic Deque: Sliding Window Maximum" }
+          ]
+        },
+        {
+          "title": "Trees & Binary Search Trees",
+          "units": [
+            { "key": "tree-terms", "title": "Tree Terminology" },
+            { "key": "tree-bst", "title": "BST Insert, Search, Delete" },
+            {
+              "key": "tree-traversal",
+              "title": "Tree Traversals: Inorder, Preorder, Postorder, Level-order"
+            }
+          ]
+        },
+        {
+          "title": "Arrays & Strings Patterns",
+          "units": [
+            { "key": "arr-two-pointers", "title": "Two Pointers Technique" },
+            { "key": "arr-sliding", "title": "Sliding Window" },
+            { "key": "arr-prefix", "title": "Prefix Sums & Kadane's Algorithm" }
+          ]
+        },
+        {
+          "title": "Hash Tables",
+          "units": [
+            { "key": "hash-basics", "title": "Hash Functions & Collision Resolution" },
+            { "key": "hash-patterns", "title": "Hash Table Patterns: Two-Sum, Frequency, Grouping" }
+          ]
+        },
+        {
+          "title": "Heaps & Priority Queues",
+          "units": [
+            { "key": "heap-basics", "title": "Min-Heap vs Max-Heap" },
+            { "key": "heap-patterns", "title": "Top-K, K-way Merge, Median Stream" }
+          ]
+        },
+        {
+          "title": "Graphs",
+          "units": [
+            { "key": "gr-repr", "title": "Graph Representations" },
+            { "key": "gr-traverse", "title": "BFS & DFS Traversal" },
+            { "key": "gr-dijkstra", "title": "Dijkstra's Shortest Path" },
+            { "key": "gr-topo", "title": "Topological Sort, Cycle Detection, Union-Find" }
+          ]
+        },
+        {
+          "title": "Dynamic Programming",
+          "units": [
+            { "key": "dp-basics", "title": "Memoization vs Tabulation" },
+            {
+              "key": "dp-classic",
+              "title": "Classic DP Problems: Knapsack, LCS, LIS, Edit Distance"
+            },
+            { "key": "dp-framework", "title": "DP Framework: State, Recurrence, Order, Answer" },
+            { "key": "dp-1d", "title": "1D DP Family: House Robber, Coin Change, Kadane" },
+            { "key": "dp-grid", "title": "Grid & Two-Sequence DP: Paths, Min Path Sum" },
+            {
+              "key": "dp-knapsack",
+              "title": "Knapsack Family: 0/1, Unbounded, Subset Sum, Coin Change II"
+            },
+            { "key": "dp-interval", "title": "Interval DP: Palindromic Subsequence, Matrix Chain" },
+            { "key": "dp-bitmask", "title": "Bitmask DP: Travelling Salesman & Subset States" },
+            { "key": "dp-state", "title": "State-Machine DP: Stock Trading with Cooldown" }
+          ]
+        },
+        {
+          "title": "Greedy Algorithms",
+          "units": [{ "key": "greedy-core", "title": "Greedy Algorithms" }]
+        },
+        {
+          "title": "Backtracking",
+          "units": [{ "key": "backtracking-core", "title": "Backtracking" }]
+        },
+        {
+          "title": "Tries (Prefix Trees)",
+          "units": [{ "key": "tries-core", "title": "Tries (Prefix Trees)" }]
+        },
+        {
+          "title": "Bit Manipulation",
+          "units": [{ "key": "bit-core", "title": "Bit Manipulation" }]
+        },
+        {
+          "title": "String Algorithms",
+          "units": [{ "key": "strings-core", "title": "String Algorithms" }]
+        },
+        { "title": "Math for DSA", "units": [{ "key": "math-core", "title": "Math for DSA" }] },
+        {
+          "title": "Union-Find (Disjoint Set Union)",
+          "units": [{ "key": "unionfind-core", "title": "Union-Find (Disjoint Set Union)" }]
+        },
+        {
+          "title": "AVL & Red-Black Trees",
+          "units": [{ "key": "avltree-core", "title": "AVL & Red-Black Trees" }]
+        },
+        {
+          "title": "Segment Trees & Fenwick Trees",
+          "units": [{ "key": "segtree-core", "title": "Segment Trees & Fenwick Trees" }]
+        },
+        {
+          "title": "Bellman-Ford & Floyd-Warshall",
+          "units": [{ "key": "shortest-core", "title": "Bellman-Ford & Floyd-Warshall" }]
+        },
+        {
+          "title": "Minimum Spanning Tree (Kruskal & Prim)",
+          "units": [{ "key": "mst-core", "title": "Minimum Spanning Tree (Kruskal & Prim)" }]
+        },
+        {
+          "title": "Advanced Graph Algorithms (SCC, Network Flow)",
+          "units": [
+            { "key": "advgraph-core", "title": "Advanced Graph Algorithms (SCC, Network Flow)" }
+          ]
+        },
+        {
+          "title": "LRU/LFU Cache & Consistent Hashing",
+          "units": [{ "key": "cache-core", "title": "LRU/LFU Cache & Consistent Hashing" }]
+        },
+        {
+          "title": "Bloom Filters & Skip Lists",
+          "units": [{ "key": "bloom-core", "title": "Bloom Filters & Skip Lists" }]
+        },
+        {
+          "title": "External Sorting & Streaming Algorithms",
+          "units": [{ "key": "external-core", "title": "External Sorting & Streaming Algorithms" }]
+        },
+        {
+          "title": "Concurrency in DSA",
+          "units": [{ "key": "concurrency-core", "title": "Concurrency in DSA" }]
+        },
+        {
+          "title": "NP-Completeness & Approximation",
+          "units": [{ "key": "np-core", "title": "NP-Completeness & Approximation" }]
+        }
+      ]
+    },
+    {
+      "id": "hci",
+      "code": "HCI",
+      "title": "Human-Computer Interaction",
+      "color": "#f472b6",
+      "topics": [
+        {
+          "title": "Introduction to Human-Computer Interaction",
+          "units": [
+            { "key": "hci-def", "title": "Definition, Components, ACM SIGCHI" },
+            { "key": "hci-why", "title": "Why Study HCI — Business, Safety, Morale" },
+            { "key": "hci-id", "title": "Interaction Design vs HCI" },
+            {
+              "key": "hci-principles",
+              "title": "Design Principles — Visibility, Feedback, Constraints, Consistency, Affordances"
+            },
+            { "key": "hci-ux", "title": "User Experience, Accessibility, Inclusiveness" }
+          ]
+        },
+        {
+          "title": "Cognition — Attention, Perception, Memory, Mental Models",
+          "units": [
+            { "key": "cog-attention", "title": "Attention — Focused and Divided" },
+            { "key": "cog-perception", "title": "Perception — How We Acquire Information" },
+            { "key": "cog-memory", "title": "Memory — Encoding, Retrieval, Recognition vs Recall" },
+            { "key": "cog-models", "title": "Mental Models & Gulfs of Execution/Evaluation" }
+          ]
+        },
+        {
+          "title": "Emotional & Social Interaction",
+          "units": [
+            { "key": "emo-norman", "title": "Norman Three Levels of Emotional Design" },
+            { "key": "emo-affective", "title": "Affective Computing & Emotional AI" },
+            { "key": "emo-persuasive", "title": "Persuasive Technology & Behaviour Change" },
+            { "key": "emo-anthropo", "title": "Anthropomorphism & Social Robots" }
+          ]
+        },
+        {
+          "title": "Conceptualising Interaction Design",
+          "units": [
+            { "key": "concept-problem", "title": "Problem Space, Assumptions, Claims" },
+            { "key": "concept-model", "title": "Conceptual Model & Interface Metaphors" },
+            {
+              "key": "concept-interaction",
+              "title": "Interaction Types — Instructing, Conversing, Manipulating, Exploring, Responding"
+            }
+          ]
+        },
+        {
+          "title": "Interface Trends — All 21 Interface Types",
+          "units": [
+            { "key": "iface-cli-gui", "title": "Command-based & GUI/WIMP Interfaces" },
+            { "key": "iface-multi-vr", "title": "Multimedia & Virtual Reality" },
+            { "key": "iface-infoviz", "title": "Information Visualization & Dashboards" },
+            { "key": "iface-web-mobile", "title": "Website & Mobile Interfaces" },
+            { "key": "iface-advanced", "title": "VUI, Touch, Gesture, Haptic, BCI" },
+            {
+              "key": "iface-rest",
+              "title": "Appliances, Pen, Multimodal, Shareable, Tangible, AR/MR, Wearables, Robots, Smart"
+            }
+          ]
+        },
+        {
+          "title": "The Process of Interaction Design",
+          "units": [
+            { "key": "idp-activities", "title": "Four Activities & User-Centered Approach" },
+            { "key": "idp-users", "title": "Users, Stakeholders, Categories" },
+            { "key": "idp-approaches", "title": "Four Approaches to Interaction Design" }
+          ]
+        },
+        {
+          "title": "Establishing Requirements",
+          "units": [
+            { "key": "req-types", "title": "Types of Requirements & Volere Shell" },
+            { "key": "req-personas", "title": "Personas" },
+            { "key": "req-scenarios", "title": "Scenarios" },
+            { "key": "req-data", "title": "Data Gathering Methods" },
+            { "key": "req-hta", "title": "Hierarchical Task Analysis (HTA)" }
+          ]
+        },
+        {
+          "title": "Design, Prototyping & Construction",
+          "units": [
+            { "key": "proto-fidelity", "title": "Low vs High Fidelity Prototypes" },
+            { "key": "gestalt", "title": "Gestalt Principles" },
+            { "key": "gestalt-applied", "title": "Applying Gestalt in Design Systems" }
+          ]
+        },
+        {
+          "title": "Journey Mapping",
+          "units": [{ "key": "jm-basics", "title": "Journey Map Components & Zones" }]
+        },
+        {
+          "title": "Introducing Evaluation",
+          "units": [
+            { "key": "eval-why", "title": "Why, What, Where, When + Settings" },
+            { "key": "eval-usability", "title": "Usability Testing & Experiments" },
+            { "key": "eval-field", "title": "Field Studies" }
+          ]
+        },
+        {
+          "title": "Heuristic Evaluation, GOMS, KLM",
+          "units": [
+            { "key": "eval-heuristic", "title": "Heuristic Evaluation & Nielsen 10" },
+            { "key": "eval-walkthrough", "title": "Cognitive & Pluralistic Walkthrough" },
+            { "key": "eval-goms-klm", "title": "Predictive Models — GOMS and KLM" }
+          ]
+        },
+        {
+          "title": "Data Analysis, Interpretation & Presentation",
+          "units": [
+            { "key": "da-quant", "title": "Quantitative Analysis" },
+            { "key": "da-qual", "title": "Qualitative Analysis" }
+          ]
+        },
+        {
+          "title": "Design Systems & Component Libraries",
+          "units": [
+            { "key": "ds-basics", "title": "Design System Components" },
+            { "key": "ds-governance", "title": "Design System Governance & Adoption" }
+          ]
+        },
+        {
+          "title": "Design Thinking & Human-Centered Design",
+          "units": [
+            { "key": "dt-phases", "title": "Five Phases" },
+            { "key": "dt-pov", "title": "POV Statements, HMW Questions, Ideation" }
+          ]
+        },
+        {
+          "title": "Accessibility & WCAG",
+          "units": [
+            { "key": "acc-wcag", "title": "WCAG POUR Principles" },
+            { "key": "acc-testing", "title": "Accessibility Testing & Assistive Technology" }
+          ]
+        },
+        {
+          "title": "Analytics, A/B Testing & Metrics",
+          "units": [
+            { "key": "an-metrics", "title": "Key Product Metrics" },
+            { "key": "an-abtest", "title": "A/B Testing" }
+          ]
+        },
+        {
+          "title": "Service Design & Blueprinting",
+          "units": [{ "key": "sd-blueprint", "title": "Service Blueprints" }]
+        },
+        {
+          "title": "Ethics & Dark Patterns",
+          "units": [
+            { "key": "ethics-dark", "title": "Dark Patterns" },
+            { "key": "ethics-principles", "title": "Ethical Design Principles & Regulation" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "os",
+      "code": "OS",
+      "title": "Operating Systems (SCSR2043)",
+      "color": "#a78bfa",
+      "topics": [
+        {
+          "title": "Introduction to Operating Systems",
+          "units": [
+            { "key": "chapter-1-subtopic-1", "title": "What Operating Systems Do" },
+            { "key": "chapter-1-subtopic-2", "title": "Computer-System Organisation" },
+            { "key": "chapter-1-subtopic-3", "title": "Computer-System Architecture" },
+            { "key": "chapter-1-subtopic-4", "title": "Operating-System Operations" },
+            { "key": "chapter-1-subtopic-5", "title": "Protection and Security" },
+            {
+              "key": "chapter-1-subtopic-6",
+              "title": "Types of Operating Systems and Computing Environments"
+            }
+          ]
+        },
+        {
+          "title": "Operating-System Structures",
+          "units": [
+            { "key": "chapter-2-subtopic-1", "title": "Operating-System Services" },
+            { "key": "chapter-2-subtopic-2", "title": "System Calls" },
+            { "key": "chapter-2-subtopic-3", "title": "System Programs and Design Approaches" }
+          ]
+        },
+        {
+          "title": "Processes",
+          "units": [
+            { "key": "chapter-3-subtopic-1", "title": "Process Concept" },
+            { "key": "chapter-3-subtopic-2", "title": "Process Scheduling" },
+            { "key": "chapter-3-subtopic-3", "title": "Operations on Processes" },
+            { "key": "chapter-3-subtopic-4", "title": "Inter-Process Communication" }
+          ]
+        },
+        {
+          "title": "Threads",
+          "units": [
+            { "key": "chapter-4-subtopic-1", "title": "Thread Concept, Benefits, and Costs" },
+            {
+              "key": "chapter-4-subtopic-2",
+              "title": "Multicore Programming and Concurrency Challenges"
+            },
+            { "key": "chapter-4-subtopic-3", "title": "Multithreading Models" },
+            { "key": "chapter-4-subtopic-4", "title": "Thread Libraries and APIs" },
+            { "key": "chapter-4-subtopic-5", "title": "Threading Issues" }
+          ]
+        },
+        {
+          "title": "Process Scheduling",
+          "units": [
+            { "key": "chapter-5-subtopic-1", "title": "Basic Concepts and Scheduling Criteria" },
+            {
+              "key": "chapter-5-subtopic-2",
+              "title": "First-Come First-Served (FCFS) and Convoy Effect"
+            },
+            { "key": "chapter-5-subtopic-3", "title": "Shortest Job First and SRTF" },
+            { "key": "chapter-5-subtopic-4", "title": "Round Robin Scheduling" },
+            { "key": "chapter-5-subtopic-5", "title": "Priority Scheduling" },
+            {
+              "key": "chapter-5-subtopic-6",
+              "title": "Multilevel Queue and Multilevel Feedback Queue"
+            },
+            { "key": "chapter-5-subtopic-7", "title": "Real-Time CPU Scheduling" },
+            { "key": "chapter-5-subtopic-8", "title": "Multiprocessor Scheduling and Linux CFS" }
+          ]
+        },
+        {
+          "title": "Process Synchronization",
+          "units": [
+            {
+              "key": "chapter-6-subtopic-1",
+              "title": "Background and the Critical-Section Problem"
+            },
+            { "key": "chapter-6-subtopic-2", "title": "Peterson's Algorithm" },
+            {
+              "key": "chapter-6-subtopic-3",
+              "title": "Hardware Support: Test-and-Set, Compare-and-Swap"
+            },
+            { "key": "chapter-6-subtopic-4", "title": "Mutex Locks and Spinlocks" },
+            { "key": "chapter-6-subtopic-5", "title": "Semaphores" },
+            {
+              "key": "chapter-6-subtopic-6",
+              "title": "Classic Problems: Reader-Writer, Dining Philosophers"
+            },
+            { "key": "chapter-6-subtopic-7", "title": "Monitors and Condition Variables" }
+          ]
+        },
+        {
+          "title": "Deadlocks",
+          "units": [
+            {
+              "key": "chapter-7-subtopic-1",
+              "title": "System Model and Resource Allocation Graph"
+            },
+            {
+              "key": "chapter-7-subtopic-2",
+              "title": "Deadlock Characterization — Four Necessary Conditions"
+            },
+            { "key": "chapter-7-subtopic-3", "title": "Deadlock Prevention" },
+            { "key": "chapter-7-subtopic-4", "title": "Deadlock Avoidance — Banker's Algorithm" },
+            { "key": "chapter-7-subtopic-5", "title": "Deadlock Detection and Recovery" }
+          ]
+        },
+        {
+          "title": "Memory-Management Strategies",
+          "units": [
+            {
+              "key": "chapter-8-subtopic-1",
+              "title": "Background, Address Binding, Memory Management Unit"
+            },
+            { "key": "chapter-8-subtopic-2", "title": "Swapping" },
+            {
+              "key": "chapter-8-subtopic-3",
+              "title": "Contiguous Memory Allocation and Fragmentation"
+            },
+            { "key": "chapter-8-subtopic-4", "title": "Segmentation" },
+            { "key": "chapter-8-subtopic-5", "title": "Paging" }
+          ]
+        },
+        {
+          "title": "Virtual Memory",
+          "units": [
+            { "key": "chapter-9-subtopic-1", "title": "Background and Demand Paging" },
+            { "key": "chapter-9-subtopic-2", "title": "Page Replacement Algorithms" },
+            { "key": "chapter-9-subtopic-3", "title": "Frame Allocation and Thrashing" },
+            {
+              "key": "chapter-9-subtopic-4",
+              "title": "Kernel Memory, Memory-Mapped Files, Prepaging"
+            }
+          ]
+        },
+        {
+          "title": "File System",
+          "units": [
+            { "key": "chapter-10-subtopic-1", "title": "File Concept, Attributes, and Operations" },
+            {
+              "key": "chapter-10-subtopic-2",
+              "title": "Directory Structures and File System Mounting"
+            },
+            { "key": "chapter-10-subtopic-3", "title": "File Protection and Access Control" },
+            {
+              "key": "chapter-10-subtopic-4",
+              "title": "Modern File Systems — ext4, XFS, ZFS, NTFS, APFS"
+            }
+          ]
+        },
+        {
+          "title": "Implementing File Systems",
+          "units": [
+            { "key": "chapter-11-subtopic-1", "title": "File-System Structure and Layered Design" },
+            {
+              "key": "chapter-11-subtopic-2",
+              "title": "Allocation Methods — Contiguous, Linked, Indexed"
+            },
+            {
+              "key": "chapter-11-subtopic-3",
+              "title": "Free-Space Management — Bitmap, Linked List, Grouping, Counting"
+            },
+            {
+              "key": "chapter-11-subtopic-4",
+              "title": "Modern File System Internals — VFS, io_uring, OverlayFS, FUSE"
+            }
+          ]
+        },
+        {
+          "title": "Mass-Storage Structure",
+          "units": [
+            { "key": "chapter-12-subtopic-1", "title": "Disk Structure and Performance Metrics" },
+            { "key": "chapter-12-subtopic-2", "title": "Disk Scheduling Algorithms" },
+            { "key": "chapter-12-subtopic-3", "title": "RAID Structure" }
+          ]
+        },
+        {
+          "title": "Advanced Industry Topics",
+          "units": [
+            {
+              "key": "chapter-13-subtopic-1",
+              "title": "Containers — Namespaces, cgroups, seccomp"
+            },
+            { "key": "chapter-13-subtopic-2", "title": "Virtualization and Hypervisors" },
+            { "key": "chapter-13-subtopic-3", "title": "eBPF and Kernel Observability" },
+            { "key": "chapter-13-subtopic-4", "title": "Kernel Modules and FUSE" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "agile",
+      "code": "AGILE",
+      "title": "Agile Project Management (SCSE2133)",
+      "color": "#fbbf24",
+      "topics": [
+        {
+          "title": "Introduction to Software Project Management",
+          "units": [
+            { "key": "t1s1", "title": "What is SPM & Why It Matters" },
+            { "key": "t1s2", "title": "SPM Life Cycle" },
+            { "key": "t1s3", "title": "Triple Constraint & Success Criteria" },
+            { "key": "t1s4", "title": "10 Common SPM Challenges" },
+            { "key": "t1s5", "title": "6 Management Controls + EVM" }
+          ]
+        },
+        {
+          "title": "Agile Principles",
+          "units": [
+            { "key": "t2s1", "title": "Agile Manifesto — 4 Values" },
+            { "key": "t2s2", "title": "12 Agile Principles" },
+            { "key": "t2s3", "title": "Project Identification & Analysis" },
+            { "key": "t2s4", "title": "Treatment: MoSCoW & Timeboxing" },
+            { "key": "t2s5", "title": "Monitoring: Burndown, Kanban, Standups" },
+            { "key": "t2s6", "title": "User Stories & Acceptance Criteria" }
+          ]
+        },
+        {
+          "title": "DSDM Composition",
+          "units": [
+            { "key": "t3s1", "title": "DSDM Philosophy & 6 Pillars" },
+            { "key": "t3s2", "title": "13 DSDM Roles" },
+            { "key": "t3s3", "title": "DSDM vs Scrum Comparison" },
+            { "key": "t3s4", "title": "Scrum vs Kanban vs Scrumban" },
+            { "key": "t3s5", "title": "PM Tools (Jira, Trello, ClickUp)" }
+          ]
+        },
+        {
+          "title": "DSDM Practices & Lifecycle",
+          "units": [
+            { "key": "t4s1", "title": "DSDM 6-Phase Process" },
+            { "key": "t4s2", "title": "DSDM vs Waterfall" },
+            { "key": "t4s3", "title": "Agile PM Focus by Phase" },
+            { "key": "t4s4", "title": "3 Lifecycle Options" },
+            { "key": "t4s5", "title": "Configuring DSDM for Scale" }
+          ]
+        },
+        {
+          "title": "Agile Planning & Control",
+          "units": [
+            { "key": "t5s1", "title": "13 DSDM Products" },
+            { "key": "t5s2", "title": "3 Planning Concepts" },
+            { "key": "t5s3", "title": "6 Testing Concepts" },
+            { "key": "t5s4", "title": "4 Tracking & Control Concepts" },
+            { "key": "t5s5", "title": "Planning Throughout Lifecycle" }
+          ]
+        },
+        {
+          "title": "MoSCoW Prioritization",
+          "units": [
+            { "key": "t6s1", "title": "MoSCoW Definition & 4 Categories" },
+            { "key": "t6s2", "title": "Effort Allocation (60/20/20)" },
+            { "key": "t6s3", "title": "10 AgilePM Top Tips" },
+            { "key": "t6s4", "title": "Reprioritization Across Timeboxes" },
+            { "key": "t6s5", "title": "Who Decides & Pitfalls" }
+          ]
+        },
+        {
+          "title": "Timeboxing",
+          "units": [
+            { "key": "t7s1", "title": "Timebox Length & Purpose" },
+            { "key": "t7s2", "title": "DSDM Structured Timebox" },
+            { "key": "t7s3", "title": "Free Format Timebox" },
+            { "key": "t7s4", "title": "Daily Stand-up & PM's Role" },
+            { "key": "t7s5", "title": "Empowered Teams & Change Control" }
+          ]
+        },
+        {
+          "title": "Workshops, Modelling & Iterative",
+          "units": [
+            { "key": "t8s1", "title": "Facilitated Workshops" },
+            { "key": "t8s2", "title": "Modelling & 6 Perspectives" },
+            { "key": "t8s3", "title": "Iterative Development & IRC Cycle" },
+            { "key": "t8s4", "title": "Reviews & Testing" },
+            { "key": "t8s5", "title": "Quality in Iterative Development" }
+          ]
+        },
+        {
+          "title": "Software Project Estimation",
+          "units": [
+            { "key": "t9s1", "title": "Estimation Basics & Challenges" },
+            { "key": "t9s2", "title": "Factors Affecting Software Costs" },
+            { "key": "t9s3", "title": "Top-Down: T-Shirt Sizing" },
+            { "key": "t9s4", "title": "Top-Down: Velocity-Based" },
+            { "key": "t9s5", "title": "Top-Down: Function Points" },
+            { "key": "t9s6", "title": "Bottom-Up: WBS Breakdown" }
+          ]
+        },
+        {
+          "title": "Entrepreneurial Mindset",
+          "units": [
+            { "key": "t10s1", "title": "What is Entrepreneurial Mindset" },
+            { "key": "t10s2", "title": "4 Key Characteristics" },
+            { "key": "t10s3", "title": "5 Monetization Strategies" },
+            { "key": "t10s4", "title": "Market Research & Audience" },
+            { "key": "t10s5", "title": "Scalability: Vertical vs Horizontal" }
+          ]
+        },
+        {
+          "title": "Security in SPM & SLA",
+          "units": [
+            { "key": "t11s1", "title": "Security as Business Enabler" },
+            { "key": "t11s2", "title": "Data Confidentiality & Access" },
+            { "key": "t11s3", "title": "Regulatory Compliance (GDPR, PDPA)" },
+            { "key": "t11s4", "title": "Service Level Agreements" },
+            { "key": "t11s5", "title": "Secure SDLC (SSLDC)" }
+          ]
+        },
+        {
+          "title": "Industry Mastery Extras (FANG)",
+          "units": [
+            { "key": "tx1", "title": "Scaling Agile: SAFe, LeSS, Spotify" },
+            { "key": "tx2", "title": "DORA Metrics & SPACE" },
+            { "key": "tx3", "title": "Team Topologies" },
+            { "key": "tx4", "title": "OKRs & Business Alignment" },
+            { "key": "tx5", "title": "DevSecOps & Shift-Left" },
+            { "key": "tx6", "title": "#NoEstimates & Monte Carlo" }
+          ]
+        }
+      ]
+    }
+  ]
+}
