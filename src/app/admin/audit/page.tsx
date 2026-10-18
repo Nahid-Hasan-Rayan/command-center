@@ -3,13 +3,13 @@
  * @author Nahid Hasan Rayan
  */
 import type { Metadata } from "next";
-import Link from "next/link";
 import { z } from "zod";
 import { Card } from "@/components/card";
 import { EmptyState, PageHeader } from "@/components/ui";
 import { requireAdmin } from "@/lib/account";
 import { formatDateTime } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
+import { AdminNav } from "../admin-nav";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Admin audit" };
@@ -45,11 +45,8 @@ export default async function AdminAuditPage() {
         title="Admin audit"
         subtitle="Every administrator action, newest first. It cannot be edited."
       />
-      <p className="text-sm">
-        <Link className="text-accent underline" href="/admin">
-          Back to administration
-        </Link>
-      </p>
+      <AdminNav current="/admin/audit" />
+
       <Card title="Actions">
         {parsed.data.length === 0 ? (
           <p className="text-sm text-muted">Nothing has been recorded yet.</p>

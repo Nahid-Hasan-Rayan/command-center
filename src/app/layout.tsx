@@ -64,6 +64,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     if (account?.isAdmin) {
       items.push({ href: "/admin", label: "Admin" });
     }
+    items.push({ href: "/report", label: "Report" });
   }
 
   return (

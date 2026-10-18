@@ -3,15 +3,17 @@
  * @author Nahid Hasan Rayan
  */
 import type { Metadata } from "next";
-import Link from "next/link";
 import { z } from "zod";
 import { Badge, Card } from "@/components/card";
 import { EmptyState, PageHeader } from "@/components/ui";
+import { overviewSchema } from "@/domain/admin-overview";
 import { FEATURE_CATALOG, parseFeatures } from "@/domain/features";
 import { parseAccountStatus, statusLabel, statusTone } from "@/domain/registration";
 import { requireAdmin } from "@/lib/account";
 import { formatDateTime } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
+import { AdminNav } from "./admin-nav";
+import { OverviewPanel } from "./overview-panel";
 import { DecisionForms, ManagePanel, type PersonRow } from "./person-panel";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +40,11 @@ const featureLabel = (id: string): string =>
 export default async function AdminPage() {
   const admin = await requireAdmin();
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("admin_list_users");
+  const [{ data, error }, overviewResult] = await Promise.all([
+    supabase.rpc("admin_list_users"),
+    supabase.rpc("admin_overview"),
+  ]);
+  const overview = overviewSchema.safeParse(overviewResult.data);
   const parsed = z.array(rowSchema).safeParse(data ?? []);
 
   if (error || !parsed.success) {
@@ -66,7 +72,6 @@ export default async function AdminPage() {
 
   const waiting = people.filter((person) => person.status === "pending");
   const others = people.filter((person) => person.status !== "pending");
-  const count = (status: string) => people.filter((person) => person.status === status).length;
 
   return (
     <div className="space-y-6">
@@ -75,25 +80,15 @@ export default async function AdminPage() {
         subtitle="Approve people, choose their features, and keep the app safe."
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {[
-          { label: "Awaiting approval", value: waiting.length },
-          { label: "Approved", value: count("approved") },
-          { label: "Suspended or archived", value: count("suspended") + count("removed") },
-          { label: "Declined or banned", value: count("rejected") + count("banned") },
-        ].map((stat) => (
-          <div key={stat.label} className="rounded-xl border border-border bg-surface p-4">
-            <p className="text-2xl font-semibold">{stat.value}</p>
-            <p className="text-xs text-muted">{stat.label}</p>
-          </div>
-        ))}
-      </div>
+      <AdminNav current="/admin" />
 
-      <p className="text-sm">
-        <Link className="text-accent underline" href="/admin/audit">
-          View the admin audit trail
-        </Link>
-      </p>
+      {overview.success ? (
+        <OverviewPanel overview={overview.data} />
+      ) : (
+        <p className="text-sm text-muted">
+          The overview could not be loaded. The people list below still works.
+        </p>
+      )}
 
       <Card
         title="Registration requests"

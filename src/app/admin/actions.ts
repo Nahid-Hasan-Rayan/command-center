@@ -7,10 +7,12 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/account";
 import { type FormState, GENERIC_ERROR } from "@/lib/form-state";
+import { timeAction } from "@/lib/monitoring";
 import { createClient } from "@/lib/supabase/server";
 import {
   accountStatusSchema,
   adminRoleSchema,
+  bugStatusSchema,
   memberFeaturesSchema,
   registrationDecisionSchema,
   removalSchema,
@@ -31,132 +33,172 @@ export async function decideRegistrationAction(
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  await requireAdmin();
-  const parsed = registrationDecisionSchema.safeParse({
-    userId: formData.get("userId"),
-    decision: formData.get("decision"),
-    note: formData.get("note") ?? "",
-    features: formData.getAll("features"),
+  return timeAction("admin.decide_registration", async () => {
+    await requireAdmin();
+    const parsed = registrationDecisionSchema.safeParse({
+      userId: formData.get("userId"),
+      decision: formData.get("decision"),
+      note: formData.get("note") ?? "",
+      features: formData.getAll("features"),
+    });
+    if (!parsed.success) {
+      return checkForm();
+    }
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("admin_decide_registration", {
+      target: parsed.data.userId,
+      decision: parsed.data.decision,
+      note: parsed.data.note ?? null,
+      features: parsed.data.decision === "approve" ? parsed.data.features : [],
+    });
+    if (error) {
+      return failure(error);
+    }
+    revalidatePath("/admin");
+    return { message: parsed.data.decision === "approve" ? "Approved." : "Request declined." };
   });
-  if (!parsed.success) {
-    return checkForm();
-  }
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_decide_registration", {
-    target: parsed.data.userId,
-    decision: parsed.data.decision,
-    note: parsed.data.note ?? null,
-    features: parsed.data.decision === "approve" ? parsed.data.features : [],
-  });
-  if (error) {
-    return failure(error);
-  }
-  revalidatePath("/admin");
-  return { message: parsed.data.decision === "approve" ? "Approved." : "Request declined." };
 }
 
 export async function setEntitlementsAction(
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  await requireAdmin();
-  const parsed = memberFeaturesSchema.safeParse({
-    userId: formData.get("userId"),
-    features: formData.getAll("features"),
+  return timeAction("admin.set_entitlements", async () => {
+    await requireAdmin();
+    const parsed = memberFeaturesSchema.safeParse({
+      userId: formData.get("userId"),
+      features: formData.getAll("features"),
+    });
+    if (!parsed.success) {
+      return checkForm();
+    }
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("admin_set_entitlements", {
+      target: parsed.data.userId,
+      features: parsed.data.features,
+    });
+    if (error) {
+      return failure(error);
+    }
+    revalidatePath("/admin");
+    return { message: "Features saved." };
   });
-  if (!parsed.success) {
-    return checkForm();
-  }
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_set_entitlements", {
-    target: parsed.data.userId,
-    features: parsed.data.features,
-  });
-  if (error) {
-    return failure(error);
-  }
-  revalidatePath("/admin");
-  return { message: "Features saved." };
 }
 
 export async function setStatusAction(
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  await requireAdmin();
-  const parsed = accountStatusSchema.safeParse({
-    userId: formData.get("userId"),
-    status: formData.get("status"),
-    note: formData.get("note") ?? "",
+  return timeAction("admin.set_status", async () => {
+    await requireAdmin();
+    const parsed = accountStatusSchema.safeParse({
+      userId: formData.get("userId"),
+      status: formData.get("status"),
+      note: formData.get("note") ?? "",
+    });
+    if (!parsed.success) {
+      return checkForm();
+    }
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("admin_set_status", {
+      target: parsed.data.userId,
+      new_status: parsed.data.status,
+      note: parsed.data.note ?? null,
+    });
+    if (error) {
+      return failure(error);
+    }
+    revalidatePath("/admin");
+    return {
+      message: parsed.data.status === "suspended" ? "Account suspended." : "Account restored.",
+    };
   });
-  if (!parsed.success) {
-    return checkForm();
-  }
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_set_status", {
-    target: parsed.data.userId,
-    new_status: parsed.data.status,
-    note: parsed.data.note ?? null,
-  });
-  if (error) {
-    return failure(error);
-  }
-  revalidatePath("/admin");
-  return {
-    message: parsed.data.status === "suspended" ? "Account suspended." : "Account restored.",
-  };
 }
 
 export async function removeUserAction(
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  await requireAdmin();
-  const parsed = removalSchema.safeParse({
-    userId: formData.get("userId"),
-    option: formData.get("option") ?? "",
-    note: formData.get("note") ?? "",
-    confirmEmail: formData.get("confirmEmail") ?? "",
+  return timeAction("admin.remove_user", async () => {
+    await requireAdmin();
+    const parsed = removalSchema.safeParse({
+      userId: formData.get("userId"),
+      option: formData.get("option") ?? "",
+      note: formData.get("note") ?? "",
+      confirmEmail: formData.get("confirmEmail") ?? "",
+    });
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0]?.message ?? "Check the form and try again." };
+    }
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("admin_remove_user", {
+      target: parsed.data.userId,
+      option: parsed.data.option,
+      note: parsed.data.note ?? null,
+      confirm_email: parsed.data.confirmEmail ?? null,
+    });
+    if (error) {
+      return failure(error);
+    }
+    revalidatePath("/admin");
+    return { message: "Done." };
   });
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Check the form and try again." };
-  }
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_remove_user", {
-    target: parsed.data.userId,
-    option: parsed.data.option,
-    note: parsed.data.note ?? null,
-    confirm_email: parsed.data.confirmEmail ?? null,
-  });
-  if (error) {
-    return failure(error);
-  }
-  revalidatePath("/admin");
-  return { message: "Done." };
 }
 
 export async function setAdminRoleAction(
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  await requireAdmin();
-  const parsed = adminRoleSchema.safeParse({
-    userId: formData.get("userId"),
-    makeAdmin: formData.get("makeAdmin"),
+  return timeAction("admin.set_admin_role", async () => {
+    await requireAdmin();
+    const parsed = adminRoleSchema.safeParse({
+      userId: formData.get("userId"),
+      makeAdmin: formData.get("makeAdmin"),
+    });
+    if (!parsed.success) {
+      return checkForm();
+    }
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("admin_set_platform_admin", {
+      target: parsed.data.userId,
+      make_admin: parsed.data.makeAdmin,
+    });
+    if (error) {
+      return failure(error);
+    }
+    revalidatePath("/admin");
+    return {
+      message: parsed.data.makeAdmin
+        ? "Administrator role granted."
+        : "Administrator role removed.",
+    };
   });
-  if (!parsed.success) {
-    return checkForm();
-  }
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("admin_set_platform_admin", {
-    target: parsed.data.userId,
-    make_admin: parsed.data.makeAdmin,
+}
+
+export async function updateBugAction(
+  _previous: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return timeAction("admin.update_bug", async () => {
+    await requireAdmin();
+    const parsed = bugStatusSchema.safeParse({
+      reportId: formData.get("reportId"),
+      status: formData.get("status"),
+      note: formData.get("note") ?? "",
+    });
+    if (!parsed.success) {
+      return checkForm();
+    }
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("admin_update_bug_report", {
+      report: parsed.data.reportId,
+      new_status: parsed.data.status,
+      note: parsed.data.note ?? null,
+    });
+    if (error) {
+      return failure(error);
+    }
+    revalidatePath("/admin/bugs");
+    return { message: "Saved." };
   });
-  if (error) {
-    return failure(error);
-  }
-  revalidatePath("/admin");
-  return {
-    message: parsed.data.makeAdmin ? "Administrator role granted." : "Administrator role removed.",
-  };
 }

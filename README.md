@@ -46,6 +46,10 @@ The administrator is the account whose **confirmed** email equals `platform_sett
 - People who already had an account when this was added are approved with every feature.
 - An invitation created by an administrator pre-approves the invitee. An invitation from anyone else does not.
 - Sign-up shows a notice that the administrator can see registration details and activity inside the app.
+- `/admin` also shows an overview: people by status, active people, messages, study minutes, sign-ups per day, errors, and response times (median and 95th percentile) for server actions.
+- `/admin/bugs`: reports people send from `/report`, with a status and a note back to the reporter. A person can file ten an hour.
+- `/admin/events`: errors and warnings recorded by the app (action failures, thrown errors, crashed pages). Only names and codes are stored, never what a person typed. Events are kept for 90 days; `purge_old_app_events` is scheduled automatically when the `pg_cron` extension is enabled, otherwise run it yourself.
+- `/admin/messages`: every channel and direct message in every workspace, searchable by channel name or member. Every listing and every read is written to the audit trail with the conversation and the number of messages read. Deleted messages stay deleted, because their text is erased when they are deleted.
 
 ## Study
 

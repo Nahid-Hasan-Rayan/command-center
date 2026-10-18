@@ -169,6 +169,93 @@ const mock = http.createServer((request, response) => {
       ? send(200, people)
       : send(403, { code: "42501", message: "administrator access required" });
   }
+  if (url.pathname === "/rest/v1/rpc/log_app_event") {
+    return send(200, true);
+  }
+  if (url.pathname.startsWith("/rest/v1/rpc/admin_") && !accounts[persona]?.is_admin) {
+    return send(403, { code: "42501", message: "administrator access required" });
+  }
+  if (url.pathname === "/rest/v1/rpc/admin_overview") {
+    return send(200, {
+      users: { approved: 3, pending: 1 },
+      signups_14d: Array.from({ length: 14 }, (_, index) => ({
+        day: `2026-10-${String(index + 3).padStart(2, "0")}`,
+        count: index % 3,
+      })),
+      active_users_7d: 2,
+      messages_7d: 5,
+      study_minutes_7d: 180,
+      open_bugs: 1,
+      errors_24h: 1,
+      errors_7d: 2,
+      top_errors: [{ kind: "action.error", count: 2 }],
+      timings: [{ name: "study.log_session", count: 4, p50_ms: 120, p95_ms: 480 }],
+    });
+  }
+  if (url.pathname === "/rest/v1/rpc/admin_list_bug_reports") {
+    return send(200, [
+      {
+        id: "99999999-0000-4000-8000-000000000001",
+        created_at: "2026-10-15T01:00:00Z",
+        email: "member@example.test",
+        page: "/study",
+        summary: "Timer froze",
+        details: "It stopped at 12:00",
+        status: "open",
+        admin_note: null,
+      },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/rpc/admin_list_events") {
+    return send(200, [
+      {
+        id: 1,
+        at: "2026-10-15T02:00:00Z",
+        kind: "action.error",
+        severity: "error",
+        email: "member@example.test",
+        path: "/study",
+        duration_ms: null,
+        detail: { name: "study.add_paper" },
+      },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/rpc/admin_list_conversations") {
+    return send(200, [
+      {
+        channel_id: "88888888-0000-4000-8000-000000000001",
+        workspace_name: "Personal",
+        kind: "channel",
+        name: "general",
+        members: ["a@example.test", "b@example.test"],
+        message_count: 3,
+        last_message_at: "2026-10-15T03:00:00Z",
+      },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/rpc/admin_read_messages") {
+    return send(200, [
+      {
+        id: "77777777-0000-4000-8000-000000000001",
+        sender_email: "a@example.test",
+        body: "hello bob",
+        created_at: "2026-10-15T01:00:00Z",
+        edited_at: null,
+        deleted_at: null,
+      },
+      {
+        id: "77777777-0000-4000-8000-000000000002",
+        sender_email: "b@example.test",
+        body: "[deleted]",
+        created_at: "2026-10-15T01:01:00Z",
+        edited_at: null,
+        deleted_at: "2026-10-15T01:02:00Z",
+      },
+    ]);
+  }
+  if (url.pathname === "/rest/v1/bug_reports") {
+    return send(200, []);
+  }
   if (url.pathname === "/rest/v1/rpc/admin_audit_list") {
     return send(200, [
       {
@@ -503,6 +590,69 @@ try {
     (await get("/study", "viewer")).status === 200 &&
       !(await get("/study", "viewer")).text.includes("Save exam date"),
   );
+
+  const overviewPage = await get("/admin", "admin");
+  check(
+    "the admin overview shows activity, health and response times",
+    overviewPage.status === 200 &&
+      overviewPage.text.includes("Active in 7 days") &&
+      overviewPage.text.includes("Needs a look") &&
+      overviewPage.text.includes("study.log_session") &&
+      overviewPage.text.includes("480 ms"),
+  );
+  check(
+    "the admin overview links to the other admin pages",
+    ["/admin/bugs", "/admin/events", "/admin/messages", "/admin/audit"].every((href) =>
+      overviewPage.text.includes(`href="${href}"`),
+    ),
+  );
+  const bugs = await get("/admin/bugs", "admin");
+  check(
+    "the administrator sees bug reports with a status form",
+    bugs.status === 200 && bugs.text.includes("Timer froze") && bugs.text.includes('name="status"'),
+  );
+  const events = await get("/admin/events", "admin");
+  check(
+    "the administrator sees recorded errors",
+    events.status === 200 &&
+      events.text.includes("action.error") &&
+      events.text.includes("study.add_paper"),
+  );
+  const conversations = await get("/admin/messages", "admin");
+  check(
+    "the administrator sees conversations and a notice that reading is recorded",
+    conversations.status === 200 &&
+      conversations.text.includes("#general") &&
+      conversations.text.includes("recorded in the audit trail"),
+  );
+  const thread = await get("/admin/messages/88888888-0000-4000-8000-000000000001", "admin");
+  check(
+    "the administrator reads a conversation, deleted messages stay deleted",
+    thread.status === 200 &&
+      thread.text.includes("hello bob") &&
+      thread.text.includes("[deleted]") &&
+      thread.text.includes("recorded in the audit trail"),
+  );
+  check(
+    "a malformed conversation id is a 404",
+    (await get("/admin/messages/not-a-uuid", "admin")).status === 404,
+  );
+  for (const path of [
+    "/admin/bugs",
+    "/admin/events",
+    "/admin/messages",
+    "/admin/messages/88888888-0000-4000-8000-000000000001",
+  ]) {
+    check(`a non-admin gets 404 for ${path}`, (await get(path, "owner")).status === 404);
+  }
+  const report = await get("/report", "owner");
+  check(
+    "anyone approved can report a problem",
+    report.status === 200 &&
+      report.text.includes("Report a problem") &&
+      report.text.includes('name="summary"'),
+  );
+  check("the Report link is in the navigation", home.text.includes('href="/report"'));
 } finally {
   mock.close();
 }

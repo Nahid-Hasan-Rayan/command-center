@@ -198,3 +198,24 @@ export const studySettingsSchema = z.object({
   unitMinutes: z.coerce.number().int().min(5).max(240),
   restDays: z.array(z.coerce.number().int().min(1).max(7)).max(7),
 });
+
+export const bugReportSchema = z.object({
+  summary: z
+    .string()
+    .trim()
+    .min(3, "Describe the problem in a few words.")
+    .max(120, "Keep the summary under 120 characters."),
+  details: optionalNoteSchema(2000).optional(),
+  page: z
+    .string()
+    .trim()
+    .max(200)
+    .transform((value) => (value === "" ? undefined : value))
+    .optional(),
+});
+
+export const bugStatusSchema = z.object({
+  reportId: uuidSchema,
+  status: z.enum(["open", "in_progress", "resolved", "wont_fix"]),
+  note: optionalNoteSchema(500).optional(),
+});
