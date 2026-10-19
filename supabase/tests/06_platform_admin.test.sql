@@ -26,7 +26,7 @@ insert into auth.users (id, email, raw_user_meta_data) values
 
 -- Real Supabase leaves email_confirmed_at NULL. Confirm every test user so the
 -- admin check (user_is_platform_admin) and accept_invitation behave as in the local stub.
-update auth.users set email_confirmed_at = now(), confirmed_at = now()
+update auth.users set email_confirmed_at = now()
  where id in (
    'bbbbbbbb-0000-0000-0000-000000000001',
    'bbbbbbbb-0000-0000-0000-000000000002',
@@ -166,7 +166,7 @@ reset role;
 insert into auth.users (id, email) values ('bbbbbbbb-0000-0000-0000-000000000009', 'erin@example.test');
 
 -- Real Supabase leaves email_confirmed_at NULL. Confirm so accept_invitation-style checks are consistent.
-update auth.users set email_confirmed_at = now(), confirmed_at = now()
+update auth.users set email_confirmed_at = now()
  where id = 'bbbbbbbb-0000-0000-0000-000000000009';
 
 select is((select status from public.registrations where user_id = 'bbbbbbbb-0000-0000-0000-000000000009'), 'banned',
@@ -183,7 +183,7 @@ insert into auth.users (id, email) values ('bbbbbbbb-0000-0000-0000-00000000000a
 
 -- Real Supabase leaves email_confirmed_at NULL. accept_invitation rejects unconfirmed accounts,
 -- so confirm gina2 before the invitation is accepted.
-update auth.users set email_confirmed_at = now(), confirmed_at = now()
+update auth.users set email_confirmed_at = now()
  where id = 'bbbbbbbb-0000-0000-0000-00000000000a';
 
 set local role authenticated;

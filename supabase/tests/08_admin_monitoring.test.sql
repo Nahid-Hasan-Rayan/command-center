@@ -23,7 +23,7 @@ insert into auth.users (id, email) values
 
 -- Real Supabase leaves email_confirmed_at NULL. Confirm every test user so the
 -- admin check (require_platform_admin) and bug-report flow behave as in the local stub.
-update auth.users set email_confirmed_at = now(), confirmed_at = now()
+update auth.users set email_confirmed_at = now()
  where id in (
    'ffffffff-0000-0000-0000-000000000001',
    'ffffffff-0000-0000-0000-000000000002',
