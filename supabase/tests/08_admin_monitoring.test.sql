@@ -21,6 +21,16 @@ insert into auth.users (id, email) values
   ('ffffffff-0000-0000-0000-000000000003', 'bob@example.test'),
   ('ffffffff-0000-0000-0000-000000000004', 'carol@example.test');
 
+-- Real Supabase leaves email_confirmed_at NULL. Confirm every test user so the
+-- admin check (require_platform_admin) and bug-report flow behave as in the local stub.
+update auth.users set email_confirmed_at = now(), confirmed_at = now()
+ where id in (
+   'ffffffff-0000-0000-0000-000000000001',
+   'ffffffff-0000-0000-0000-000000000002',
+   'ffffffff-0000-0000-0000-000000000003',
+   'ffffffff-0000-0000-0000-000000000004'
+ );
+
 create temp table ctx as select
   (select id from public.workspaces where owner_id = 'ffffffff-0000-0000-0000-000000000002') as alice_ws;
 grant select on ctx to authenticated, anon;

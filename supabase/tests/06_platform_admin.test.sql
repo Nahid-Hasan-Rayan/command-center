@@ -24,6 +24,20 @@ insert into auth.users (id, email, raw_user_meta_data) values
   ('bbbbbbbb-0000-0000-0000-000000000007', 'frank@example.test', '{"display_name":"Frank"}'),
   ('bbbbbbbb-0000-0000-0000-000000000008', 'gina@example.test', '{"display_name":"Gina"}');
 
+-- Real Supabase leaves email_confirmed_at NULL. Confirm every test user so the
+-- admin check (user_is_platform_admin) and accept_invitation behave as in the local stub.
+update auth.users set email_confirmed_at = now(), confirmed_at = now()
+ where id in (
+   'bbbbbbbb-0000-0000-0000-000000000001',
+   'bbbbbbbb-0000-0000-0000-000000000002',
+   'bbbbbbbb-0000-0000-0000-000000000003',
+   'bbbbbbbb-0000-0000-0000-000000000004',
+   'bbbbbbbb-0000-0000-0000-000000000005',
+   'bbbbbbbb-0000-0000-0000-000000000006',
+   'bbbbbbbb-0000-0000-0000-000000000007',
+   'bbbbbbbb-0000-0000-0000-000000000008'
+ );
+
 create temp table ctx as select
   (select id from public.workspaces where owner_id = 'bbbbbbbb-0000-0000-0000-000000000001') as root_ws,
   (select id from public.workspaces where owner_id = 'bbbbbbbb-0000-0000-0000-000000000002') as alice_ws;
@@ -150,6 +164,11 @@ select ok(exists (select 1 from public.admin_audit_list(500) where action = 'use
 -- bans and invitations (superuser setup) ---------------------------------------------------------------
 reset role;
 insert into auth.users (id, email) values ('bbbbbbbb-0000-0000-0000-000000000009', 'erin@example.test');
+
+-- Real Supabase leaves email_confirmed_at NULL. Confirm so accept_invitation-style checks are consistent.
+update auth.users set email_confirmed_at = now(), confirmed_at = now()
+ where id = 'bbbbbbbb-0000-0000-0000-000000000009';
+
 select is((select status from public.registrations where user_id = 'bbbbbbbb-0000-0000-0000-000000000009'), 'banned',
   'a banned email cannot register again');
 select is((select count(*) from public.workspaces where owner_id = 'bbbbbbbb-0000-0000-0000-000000000008'), 0::bigint,
@@ -161,6 +180,11 @@ insert into public.invitations (workspace_id, email, role, features, token_hash,
   ((select alice_ws from ctx), 'gina2@example.test', 'viewer', array['career'],
      encode(sha256(convert_to('user-token', 'UTF8')), 'hex'), now() + interval '1 day', 'bbbbbbbb-0000-0000-0000-000000000002');
 insert into auth.users (id, email) values ('bbbbbbbb-0000-0000-0000-00000000000a', 'gina2@example.test');
+
+-- Real Supabase leaves email_confirmed_at NULL. accept_invitation rejects unconfirmed accounts,
+-- so confirm gina2 before the invitation is accepted.
+update auth.users set email_confirmed_at = now(), confirmed_at = now()
+ where id = 'bbbbbbbb-0000-0000-0000-00000000000a';
 
 set local role authenticated;
 select pg_temp.login('bbbbbbbb-0000-0000-0000-000000000007');
