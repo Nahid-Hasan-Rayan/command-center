@@ -163,6 +163,12 @@ select ok(exists (select 1 from public.admin_audit_list(500) where action = 'use
 
 -- bans and invitations (superuser setup) ---------------------------------------------------------------
 reset role;
+
+-- Real Supabase enforces a unique email on auth.users. Erin was created above as ...006
+-- and then banned in the removal test. blocked_emails is keyed by email, so deleting her
+-- auth row here keeps the ban intact while freeing the email for the re-registration test.
+delete from auth.users where id = 'bbbbbbbb-0000-0000-0000-000000000006';
+
 insert into auth.users (id, email) values ('bbbbbbbb-0000-0000-0000-000000000009', 'erin@example.test');
 
 -- Real Supabase leaves email_confirmed_at NULL. Confirm so accept_invitation-style checks are consistent.
